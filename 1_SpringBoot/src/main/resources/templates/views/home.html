@@ -1,7 +1,5 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- 이걸 적어줘야 thymeleaf를 사용할 수 있음 -->
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
@@ -10,9 +8,11 @@
 <body>
 	<main>
 		<!-- common/navbar.html 삽입 : 1) th:replace 2) th:insert -->
-		<div th:replace="~{views/common/navbar.html :: navbar}"></div> 
-		<!-- 제대로 된 경로?! -->
-		<!-- <div th:insert="views/common/navbar.html"></div> -->
+		<!-- insert는 해당 태그를 그대로 사용하며 안에 조각코드로 불러옴 
+			 replace는 해당 태그를 대체하며 조각코드를 불러옴
+		-->
+		<div th:replace="~{views/common/navbar.html :: navbar}"></div>
+		
 		
 		<div class="container py-4">
 			<div class="p-5 mb-4 bg-light rounded-3">
