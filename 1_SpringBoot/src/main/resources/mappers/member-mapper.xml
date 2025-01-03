@@ -2,16 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kh.springboot.member.model.mapper.MemberMapper">
-	<select id="login" resultMap="MemberResultSet">
+	<select id="login" resultType="Member">
 		select *
 		from member
 		where id = #{id} and pwd = #{pwd} and member_status ='Y'
 	</select>
-	
-	<resultMap type="kh.springboot.member.model.vo.Member" id="MemberResultSet">
-		<result property="enrollDate" column="ENROLL_DATE"/>
-		<result property="updateDate" column="UPDATE_DATE"/>
-		<result property="memberStatus" column="MEMBER_STATUS"/>
-		<result property="isAdmin" column="IS_ADMIN"/>
-	</resultMap>
 </mapper>

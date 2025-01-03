@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import jakarta.servlet.http.HttpSession;
+import kh.springboot.member.exception.MemberException;
 import kh.springboot.member.model.service.MemberService;
 import kh.springboot.member.model.vo.Member;
 import lombok.RequiredArgsConstructor;
@@ -83,12 +85,16 @@ public class MemberController {
 	
 	//5. @ModelAttribute 생략
 	@PostMapping("/member/signIn")
-	public void login(Member m){
+	public String login(Member m, HttpSession session){
 		//System.out.println("id4 " + m.getId());
 		//System.out.println("pwd4 " + m.getPwd());
-		
 		Member loginUser = mService.login(m);
-		System.out.println(loginUser);
+		if(loginUser != null) {
+			session.setAttribute("loginUser", loginUser);
+			return "redirect:/home";
+		}else {
+			throw new MemberException("로그인을 실패하였습니다.");
+		}
 	}
 	
 }
