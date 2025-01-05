@@ -23,7 +23,7 @@
 						for modern Java-based enterprise applications - on any kind of deployment platform.
 					</p>
 					<button th:if="${session.loginUser == null}" class="btn btn-primary btn-lg" type="button" onclick="location.href='member/signIn'">SIGN IN</button>
-						<!-- [[]]태그 안에 내용을 더 집어넣을 때 사용 -->
+						<!-- [ [ ] ] 태그 안에 내용을 더 집어넣을 때 사용 -->
 					<p th:if="${session.loginUser != null}" class="col-md-8 fs-4 fw-bold">
 						[[${session.loginUser.name}]]님 환영합니다.
 						<button class="btn btn-success bth-lg" type="button" onclick="location.href='member/myInfo'">My PAGE</button>
