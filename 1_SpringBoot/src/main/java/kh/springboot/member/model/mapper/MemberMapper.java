@@ -1,5 +1,8 @@
 package kh.springboot.member.model.mapper;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import kh.springboot.member.model.vo.Member;
@@ -10,5 +13,9 @@ import kh.springboot.member.model.vo.Member;
 public interface MemberMapper {
 
 	Member login(Member m);
+	
+	int insertMember(Member m);
+
+	ArrayList<HashMap<String, Object>> selectMyList(String id);
 	
 }

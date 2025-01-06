@@ -1,9 +1,19 @@
 package kh.springboot.member.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpSession;
 import kh.springboot.member.exception.MemberException;
@@ -13,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor //여기에 붙는다
+@SessionAttributes("loginUser")
 public class MemberController {
 	
 	//private MemberService mService;
@@ -30,8 +41,13 @@ public class MemberController {
 	//@Autowired를 사용하면 편하지만, 요즘은 final이 붙으면 변이가 일어나지 않음으로써 오는 불변성이 보장되기 때문에 생성자 주입을 좀 더 권장하고 있다
 	private final MemberService mService;
 	
+	private final BCryptPasswordEncoder bcrypt;
+	
 	@GetMapping("/member/signIn")
 	public String singIn() {
+		System.out.println(bcrypt.encode("1234"));
+		System.out.println(bcrypt.encode("pass01"));
+		System.out.println(bcrypt.encode("pass02"));
 		return "views/member/login";
 		// 로그인 화면 연결
 	}
@@ -84,23 +100,113 @@ public class MemberController {
 //	}
 	
 	//5. @ModelAttribute 생략
-	@PostMapping("/member/signIn")
-	public String login(Member m, HttpSession session){
-		//System.out.println("id4 " + m.getId());
-		//System.out.println("pwd4 " + m.getPwd());
-		Member loginUser = mService.login(m);
+//	@PostMapping("/member/signIn")
+//	public String login(Member m, HttpSession session){
+//		//System.out.println("id4 " + m.getId());
+//		//System.out.println("pwd4 " + m.getPwd());
+//		Member loginUser = mService.login(m);
+//		if(loginUser != null) {
+//			session.setAttribute("loginUser", loginUser);
+//			return "redirect:/home";
+//		}else {
+//			throw new MemberException("로그인을 실패하였습니다.");
+//		}
+//	}
+	
+
+	
+//	@GetMapping("/member/logout")
+//	public String logout(HttpSession session) {
+//		session.invalidate();
+//		return "redirect:/home";
+//	}
+	
+	@GetMapping("/member/enroll")
+	public String enroll(){
+		return "views/member/enroll";
+	}
+	
+	@PostMapping("/member/enroll")
+	public String enroll(@ModelAttribute Member m,
+						 @RequestParam("emailId") String emailId, @RequestParam("emailDomain") String emailDomain) {
+		if(!emailId.trim().equals("")) {
+			m.setEmail(emailId + "@" + emailDomain);
+		}
+
+		m.setPwd(bcrypt.encode(m.getPwd()));
+
+		int result = mService.insertMember(m);
+		if(result > 0) {
+			return "redirect:/home";
+		}else {
+			throw new MemberException("회원가입을 실패하였습니다.");
+		}
+	}
+	
+	//암호화 후 로그인
+//	@PostMapping("/member/signIn")
+//	public String login(Member m, HttpSession session){
+//		Member loginUser = mService.login(m);
+//		if(loginUser != null && bcrypt.matches(m.getPwd(), loginUser.getPwd())) {
+//			session.setAttribute("loginUser", loginUser);
+//			return "redirect:/home";
+//		}else {
+//			throw new MemberException("로그인을 실패하였습니다.");
+//		}
+//	}
+	
+	/***** 요청 후 전달하고자 있는 데이터가 있는 경우*****/
+	//1. Model 이용
+	//		맵 형식(key, value)으로 request scope에 데이터를 담아 전달
+	//내 정보 조회
+//	@GetMapping("/member/myInfo")
+//	public String myInfo(HttpSession session, Model model) {
+//		Member loginUser = (Member)session.getAttribute("loginUser");
+//		if(loginUser != null) {
+//			String id = loginUser.getId();
+//			
+//			//내가 쓴 글과 내가 쓴 댓글을 한 번에 받아오는 법
+//			ArrayList<HashMap<String, Object>> list = mService.selectMyList(id);
+//			model.addAttribute("list", list);
+//		}
+//		return "views/member/myInfo";
+//	}
+	
+	//2. ModelAndView 이용
+	//		Model + View
+	@GetMapping("/member/myInfo")
+	public ModelAndView myInfo(HttpSession session, ModelAndView mv) {
+		Member loginUser = (Member)session.getAttribute("loginUser");
 		if(loginUser != null) {
-			session.setAttribute("loginUser", loginUser);
+			String id = loginUser.getId();
+			
+			//내가 쓴 글과 내가 쓴 댓글을 한 번에 받아오는 법
+			ArrayList<HashMap<String, Object>> list = mService.selectMyList(id);
+			mv.addObject("list", list);
+			mv.setViewName("views/member/myInfo");
+		}
+		return mv;
+	}
+	
+	
+	// 암호화 후 로그인 + @SessionAttributes
+	//		@SessionAttributes는 model에 attribute가 추가될 때 자동으로 키 값을 찾아 세션에 등록하는 어노테이션
+	@PostMapping("/member/signIn")
+	public String login(Member m, Model model){
+		Member loginUser = mService.login(m);
+		if(loginUser != null && bcrypt.matches(m.getPwd(), loginUser.getPwd())) {
+			model.addAttribute("loginUser", loginUser);
 			return "redirect:/home";
 		}else {
 			throw new MemberException("로그인을 실패하였습니다.");
 		}
 	}
 	
+	// @SessionAttributes 추가 후 로그 아웃 구현
+	
 	@GetMapping("/member/logout")
-	public String logout(HttpSession session) {
-		session.invalidate();
+	public String logout(SessionStatus session) {
+		session.setComplete();
 		return "redirect:/home";
 	}
-	
 }
