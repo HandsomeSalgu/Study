@@ -44,12 +44,12 @@
                      <tr><td>UPDATE</td><td th:text="${session.loginUser.updateDate}"></td></tr>
                   </table>
                   <br>
-                  <button class="btn btn-outline-light" type="button">EDIT MY INFO</button>
+                  <button class="btn btn-outline-light" type="button" onclick="location.href='edit'">EDIT MY INFO</button>
                </div>
             </div>
             <div class="col-md-6">
                <div class="h-100 p-5 bg-light border rounded-3">
-                  <form action="/member/updatePassword" method="post">
+                  <form th:action="|@{/}member/updatePassword|" method="post">
                      <h2>Update your Password</h2>
                      <div class="col-12">
                         <label for="currentPwd" class="form-label">Current PWD</label>
@@ -124,7 +124,7 @@
                  <p class="mb-0">탈퇴 후 계정은 복구할 수 없습니다.</p>
                </div>
                <div class="modal-footer flex-nowrap p-0">
-                 <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-end" onclick="location.href='/member/delete'">
+                 <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-end" onclick="location.href='../member/delete'">
                     <strong>네</strong>
                  </button>
                  <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0" data-bs-dismiss="modal">아니오</button>
@@ -146,7 +146,7 @@
          
          
          document.getElementById('delete').addEventListener('click', ()=>{
-            $('#modalChoice').modal('show');   
+            $('#modalChoice').modal('show');
          });
       }
    </script>

@@ -9,10 +9,10 @@
 <body>
 	<nav class="navbar navbar-expand navbar-dark bg-dark" aria-label="Second navbar example">
 		<div class="container-fluid">
-			<a class="navbar-brand" href="/home">SpringBoot project</a>
+			<a class="navbar-brand" th:href="|@{/}home|">SpringBoot project</a>
 			<div class="collapse navbar-collapse" id="navbarsExample02">
 				<ul class="navbar-nav me-auto">
-					<li class="nav-item"><a class="nav-link active" aria-current="page" href="/home">Home</a></li>
+					<li class="nav-item"><a class="nav-link active" aria-current="page" th:href="|@{/}home|">Home</a></li>
 					<li class="nav-item"><a class="nav-link active" href="#">Board</a></li>
 					<li class="nav-item"><a class="nav-link active" href="#">Photo</a></li>
 				</ul>
