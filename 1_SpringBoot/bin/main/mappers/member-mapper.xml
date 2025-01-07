@@ -43,5 +43,23 @@
 		order by id_type desc
 		]]>
 	</select>
+	
+	<update id="updateMember">
+		update member
+		set name=#{name}, nickname =#{nickName}, email=#{email}, gender=#{gender}, age=#{age}, phone=#{phone}, address=#{address}, UPDATE_DATE=sysdate
+		where id=#{id} and MEMBER_STATUS='Y'
+	</update>
+	
+	<update id="updatePwd">
+		update member
+		set pwd= #{pwd}
+		where id= #{id}
+	</update>
+	
+	<update id="deleteUser">
+		update member
+		set MEMBER_STATUS = 'N'
+		where id=#{id}
+	</update>
 </mapper>
 	

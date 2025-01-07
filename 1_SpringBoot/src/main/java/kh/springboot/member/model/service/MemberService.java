@@ -27,4 +27,16 @@ public class MemberService {
 		return mapper.selectMyList(id);
 	}
 
+	public int updateMember(Member m) {
+		return mapper.updateMember(m);
+	}
+
+	public int updatePwd(Member m) {
+		return mapper.updatePwd(m);
+	}
+
+	public int deleteUser(String id) {
+		return mapper.deleteUser(id);
+	}
+
 }

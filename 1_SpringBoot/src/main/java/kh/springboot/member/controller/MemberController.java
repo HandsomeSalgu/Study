@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor //여기에 붙는다
 @SessionAttributes("loginUser")
+@RequestMapping("/member/")
 public class MemberController {
 	
 	//private MemberService mService;
@@ -43,12 +45,13 @@ public class MemberController {
 	
 	private final BCryptPasswordEncoder bcrypt;
 	
-	@GetMapping("/member/signIn")
+	@GetMapping("signIn")
 	public String singIn() {
 		System.out.println(bcrypt.encode("1234"));
 		System.out.println(bcrypt.encode("pass01"));
 		System.out.println(bcrypt.encode("pass02"));
-		return "views/member/login";
+		System.out.println(bcrypt.encode("1111"));
+		return "login";
 		// 로그인 화면 연결
 	}
 	
@@ -121,12 +124,12 @@ public class MemberController {
 //		return "redirect:/home";
 //	}
 	
-	@GetMapping("/member/enroll")
+	@GetMapping("enroll")
 	public String enroll(){
-		return "views/member/enroll";
+		return "enroll";
 	}
 	
-	@PostMapping("/member/enroll")
+	@PostMapping("enroll")
 	public String enroll(@ModelAttribute Member m,
 						 @RequestParam("emailId") String emailId, @RequestParam("emailDomain") String emailDomain) {
 		if(!emailId.trim().equals("")) {
@@ -174,7 +177,7 @@ public class MemberController {
 	
 	//2. ModelAndView 이용
 	//		Model + View
-	@GetMapping("/member/myInfo")
+	@GetMapping("myInfo")
 	public ModelAndView myInfo(HttpSession session, ModelAndView mv) {
 		Member loginUser = (Member)session.getAttribute("loginUser");
 		if(loginUser != null) {
@@ -191,7 +194,7 @@ public class MemberController {
 	
 	// 암호화 후 로그인 + @SessionAttributes
 	//		@SessionAttributes는 model에 attribute가 추가될 때 자동으로 키 값을 찾아 세션에 등록하는 어노테이션
-	@PostMapping("/member/signIn")
+	@PostMapping("signIn")
 	public String login(Member m, Model model){
 		Member loginUser = mService.login(m);
 		if(loginUser != null && bcrypt.matches(m.getPwd(), loginUser.getPwd())) {
@@ -204,9 +207,62 @@ public class MemberController {
 	
 	// @SessionAttributes 추가 후 로그 아웃 구현
 	
-	@GetMapping("/member/logout")
+	@GetMapping("logout")
 	public String logout(SessionStatus session) {
 		session.setComplete();
 		return "redirect:/home";
 	}
+	
+	@GetMapping("edit")
+	public String edit() {
+		return "edit";
+	}
+	
+	@PostMapping("edit")
+	public String edit(@ModelAttribute Member m, @RequestParam("emailId") String emailId, 
+					   @RequestParam("emailDomain") String emailDomain, Model model) {
+		
+		if(!emailId.trim().equals("")) {
+			m.setEmail(emailId + "@" + emailDomain);
+		}
+		
+		int result = mService.updateMember(m);
+		if(result>0) {
+			Member loginUser = mService.login(m);
+			model.addAttribute("loginUser", loginUser);
+			return "redirect:/member/myInfo";
+		}else {
+			throw new MemberException("정보 수정을 실패하였습니다");
+		}
+		
+	}
+	@PostMapping("updatePassword")
+	public String updatepassword(@RequestParam("currentPwd") String currentPwd,
+								 @RequestParam("newPwd") String newPwd,
+								 Model model){
+		
+		Member m = (Member)model.getAttribute("loginUser");
+		
+		if(m != null && bcrypt.matches(currentPwd, m.getPwd())) {
+			
+			m.setPwd(bcrypt.encode(newPwd));
+			int result = mService.updatePwd(m);
+			
+			if(result>0) {
+				model.addAttribute("loginUser",  mService.login(m));
+				return "redirect:/home";
+			}
+		}
+		throw new MemberException("비밀번호 수정 실패");
+	}
+	
+	@GetMapping("delete")
+	public String deleteUser(Model model, SessionStatus session) {
+		int result = mService.deleteUser(((Member)model.getAttribute("loginUser")).getId());
+		if(result>0) {
+			return "redirect:/member/logout";
+		}
+		throw new MemberException("회원 탈퇴 실패");
+	}
+	
 }
