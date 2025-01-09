@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>td:hover{cursor: pointer;}</style>
+</head>
+<body>
+	<div th:replace="~{views/common/navbar.html :: navbar}"></div>
+	
+	<div class="container py-4">
+		<div class="bd-example-snippet bd-code-snippet">
+			<div class="p-5 mb-4 bg-light rounded-3">
+				<div class="container-fluid py-5">
+					<h1 class="display-5 fw-bold">General Board</h1>
+				</div>
+			</div>
+			<div class="bd-example">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th width="80px">글 번호</th>
+							<th>글 제목</th>
+							<th width="130px">작성자</th>
+							<th width="130px">작성일자</th>
+							<th width="80px">조회수</th>
+	          			</tr>
+	          		</thead>
+	         		<tbody> 
+	          			<tr th:each="b : ${list}">
+	            			<td>[[${b.boardId}]]</td>
+	            			<td>[[${b.boardTitle}]]</td>
+	            			<td>[[${b.nickName}]]</td>
+	            			<td>[[${b.modifyDate}]]</td>
+	            			<td>[[${b.boardCount}]]</td>
+	          			</tr>
+	          		</tbody>			
+	        	</table>
+	       	</div>
+		</div>
+        <nav aria-label="Standard pagination example" style="float: right;">
+        	<ul class="pagination">
+        		<!-- 이전 -->
+	            <li class="page-item">
+	            	<th:block th:if="${pi.currentPage >1}">
+	            	<a class="page-link" th:href="@{${Loc}(page=${pi.currentPage-1})}" aria-label="Previous">
+	            		<span aria-hidden="true">&laquo;</span>
+	              	</a>
+	              	</th:block>
+	              	<th:block th:if="${pi.currentPage <= 1}">
+	              	<a class="page-link" aria-label="Previous">
+	            		<span aria-hidden="true">&laquo;</span>
+	              	</a>
+	              	</th:block>
+	            </li>
+	            
+	            <!-- 숫자 -->
+	            <!-- #numbers는 기본객체 -->
+	            <!-- 시작하는 페이지부터 끝나는 페이지까지 나열 -->
+	            <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+	            	<a class="page-link" th:href="@{${Loc}(page=${p})}">[[${p}]]</a>
+	            </li>
+	            
+	            <!-- 다음 -->
+	            <li class="page-item">
+	            	<a class="page-link" th:href="@{${Loc}(page=${pi.currentPage+1})}" aria-label="Next">
+	            		<span aria-hidden="true">&raquo;</span>
+	            	</a>
+	            </li>
+	            
+	    	</ul>
+        </nav>
+		<!-- 로그인 했을 때만 버튼 보이게 -->		
+       	<button th:if="${session.loginUser}" class="btn btn-outline-success" type="button" th:onclick="location.href='write'">WRITE BOARD</button>
+
+	</div>
+</body>
+</html>

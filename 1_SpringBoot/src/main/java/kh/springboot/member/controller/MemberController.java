@@ -33,11 +33,11 @@ public class MemberController {
 	//하지만 이렇게 하면 주입이 안됐다, MemberService에서도 @Service를 사용하여 빈을 생성했지만, 현재 mService에는 주입시키지 않았다
 	
 	//의존성 주입 
-	//1. 필드 주입 @Autowired
+	//1. 필드 의존성 주입 @Autowired
 	@Autowired	//해당 빈을 보고 맞는 게 있으면 자동으로 주입
 //	private MemberService mService;
 	
-	//2. 생성자 주입 @RequiredArgsConstructor + final
+	//2. 생성자 의존성 주입 @RequiredArgsConstructor + final
 	//		@RequiredArgsConstructor : 특정 변수(final이 붙은 상수 혹은 @NotNull이 붙은 변수)만 가지고 생성자 생성(lombok에 있다)
 	
 	//@Autowired를 사용하면 편하지만, 요즘은 final이 붙으면 변이가 일어나지 않음으로써 오는 불변성이 보장되기 때문에 생성자 주입을 좀 더 권장하고 있다
@@ -180,6 +180,7 @@ public class MemberController {
 	@GetMapping("myInfo")
 	public ModelAndView myInfo(HttpSession session, ModelAndView mv) {
 		Member loginUser = (Member)session.getAttribute("loginUser");
+		System.out.println(loginUser);
 		if(loginUser != null) {
 			String id = loginUser.getId();
 			
