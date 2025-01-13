@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body class="bg-light">
+	<div th:replace="~{views/common/navbar :: navbar}"></div>
+	<div class="container">
+		<main>
+			<div class="py-5 text-center">
+				<a th:href="|@{/}home|"><img class="d-block mx-auto mb-4" th:src="|@{/}image/springboot.png|" width="130"></a>
+				<h2>WRITE BOARD</h2>
+			</div>
+
+			<div style="margin-left: 350px; margin-right: 350px;">
+				<form class="needs-validation" method="POST" id="detailForm">
+					<input type="hidden" name="boardId" th:value="${board.boardId}">
+					<input type="hidden" name="page" th:value="${page}">
+					<div class="row g-3">
+						<div class="col-12">
+							<label for="boardTitle" class="form-label">TITLE</label>
+							<h2>[[${board.boardTitle}]]</h2>
+						</div>
+
+						<div class="col-12">
+							<div class="input-group">
+					          <span class="input-group-text">CONTENT</span>
+					          <textarea class="form-control" rows="10" name="boardContent" style="resize: none;" readonly>[[${board.boardContent}]]</textarea>
+					        </div>
+						</div>
+						
+						<br><br><br><br><br>
+						
+						<th:block th:if="${session.loginUser != null && session.loginUser.id == board.boardWriter}">
+						<button class="w-100 btn btn-success btn-lg" type="button" id="updateForm">UPDATE</button>
+						<button class="w-100 btn btn-secondary btn-lg" type="button" id="deleteModal">DELETE</button>
+						</th:block>
+						<button class="w-100 btn btn-dark btn-lg" type="button" onclick="javascript:history.back();">BACK</button>
+						
+					</div>
+				</form>
+			</div>
+		</main>
+
+		<footer class="my-5 pt-5 text-muted text-center text-small"></footer>
+		
+		
+	   <div class="modal fade" tabindex="-1" role="dialog" id="modalChoice">
+	   
+	      <div class="modal-dialog" role="document">
+	          <div class="modal-content rounded-3 shadow">
+	               <div class="modal-body p-4 text-center">
+	                 <h3 class="mb-0">정말로 삭제하시겠습니까?</h3>
+	                 <p class="mb-0">삭제 후 게시글을 되돌릴 수 없습니다.</p>
+	               </div>
+	               <div class="modal-footer flex-nowrap p-0">
+	                 <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-end" id="delete">
+	                    <strong>네</strong>
+	                 </button>
+	                 <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0" data-bs-dismiss="modal">아니오</button>
+	               </div>
+	          </div>
+	        </div>
+	   </div>
+	   		
+	</div>
+	
+	<script>
+		
+		
+		window.onload = () =>{
+			let hostIndex = location.href.indexOf( location.host ) + location.host.length;
+			let contextPath = location.href.substring( hostIndex, location.href.indexOf('/', hostIndex + 1) );
+			
+			const upd = document.getElementById('updateForm');
+			const form = document.getElementById('detailForm');
+			if(upd != null){
+				upd.addEventListener('click', ()=>{
+					form.action = contextPath +'/board/upForm';
+					form.submit();
+				})
+			}
+			
+			//수정 (/updForm) : /views/board/edit.html   detail.html 수정하여 사용
+			//				   1. form action 재삽입
+			//					:/board/update
+			//					2. 제목, 내용 input 태그에
+			//					3. UPDATE -> SUBMIT
+			//					-> 수정 성공 시 해당 게시글 상세보기로
+			
+			//삭제 (/delete)		-> 삭제 성공 시 게시글 전체 목록으로
+			
+			document.getElementById("deleteModal").addEventListener('click', ()=>{
+				$('#modalChoice').modal('show');
+			});
+			
+			document.getElementById('delete').addEventListener('click', ()=>{
+				form.action = contextPath +'/board/delete';
+				form.submit();
+			});
+
+		}
+	</script>
+	
+	
+	
+</body>
+</html>

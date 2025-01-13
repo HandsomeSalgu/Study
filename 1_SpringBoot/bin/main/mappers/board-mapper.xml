@@ -26,4 +26,29 @@
 		values(SEQ_BID.nextval, #{boardTitle}, #{boardWriter}, #{boardContent},
 			   default, sysdate, sysdate, default, #{boardType})
 	</insert>
+	
+	<select id="selectBoard" resultMap="boardResultSet">
+		select *
+		from board
+			 join member on(board_writer = id)
+		where BOARD_ID = #{boardId} and board_status = 'Y'
+	</select>
+	
+	<update id="updateCount">
+		update board
+		set BOARD_COUNT = BOARD_COUNT+1
+		where BOARD_ID = #{boardId}
+	</update>
+
+	<update id="updateBoard">
+		update board
+		set board_title = #{boardTitle}, board_content = #{boardContent}, board_modify_date = sysdate
+		where board_id = #{boardId}
+	</update>
+	
+	<update id="deleteBoard">
+		update board
+		set BOARD_STATUS = 'N'
+		where board_id = #{boardId}
+	</update>
 </mapper>
