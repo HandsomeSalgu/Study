@@ -74,5 +74,21 @@
        	<button th:if="${session.loginUser}" class="btn btn-outline-success" type="button" th:onclick="location.href='write'">WRITE BOARD</button>
 
 	</div>
+	
+	<script th:inline="javascript">
+		window.onload = () =>{
+			const tbody = document.querySelector('tbody');
+			const tds = tbody.querySelectorAll('td');
+			for(const td of tds){
+				td.addEventListener('click', function(){
+					const trTds = this.parentElement.querySelectorAll('td');
+					const boardId = trTds[0].innerText;
+					location.href= boardId + "/" + /*<![CDATA[*//*[[${pi.currentPage}]]*/1/*]]>*/;	
+					//1이 있는이유는 없으면 뒤에가 다 주석처리가 되어서 1을 넣어준다
+					// /board/10/2
+				});
+			}
+		}
+	</script>
 </body>
 </html>

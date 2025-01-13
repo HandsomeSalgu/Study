@@ -16,4 +16,14 @@ public interface BoardMapper {
 
 	int insertBoard(Board b);
 
+	Board selectBoard(Board b);
+
+	int updateCount(int boardId);
+
+	int updateBoard(Board b);
+
+	int deleteBoard(int bId);
+
+
+
 }

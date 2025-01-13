@@ -29,4 +29,32 @@ public class BoardService {
 	public int insertBoard(Board b) {
 		return mapper.insertBoard(b);
 	}
+
+	public Board selectBoard(Board b) {
+		Board board = mapper.selectBoard(b);
+
+		if(board != null && board.getBoardWriter().equals(b.getBoardWriter())) {
+			int result = mapper.updateCount(b.getBoardId());
+			if(result>0) {
+				board.setBoardCount(board.getBoardCount()+1);
+			}
+		}
+		
+		return board;
+	}
+
+	public Board updateForm(int bId) {
+		Board b = new Board();
+		b.setBoardId(bId);
+		return b = mapper.selectBoard(b);
+	}
+
+	public int updateBoard(Board b) {
+		return mapper.updateBoard(b);
+	}
+
+	public int deleteBoard(int bId) {
+		return mapper.deleteBoard(bId);
+	}
+
 }

@@ -6,14 +6,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kh.springboot.board.exception.BoardException;
-import kh.springboot.board.model.mapper.BoardMapper;
 import kh.springboot.board.model.service.BoardService;
 import kh.springboot.board.model.vo.Board;
 import kh.springboot.board.model.vo.PageInfo;
@@ -62,5 +63,85 @@ public class BoardController {
 			throw new BoardException("게시글이 등록되지 않았습니다");	
 		}
 		
+	}
+	
+	@GetMapping("/{id}/{page}")	//앞에는 id, 뒤에는 page라는 값을 뽑아오겠다
+	public ModelAndView selectBoard(@PathVariable("id") int bId, @PathVariable("page") int page,
+							HttpSession session, ModelAndView mv) {
+		// 글 상세 조회 + 조회수가 수정 되어야 한다
+		//			   내가 내 글을 조회 or 비회원 조회 -> 조회수 올라가지 않음
+		//			   ㄴ 현재 로그인한 사람의 아이디 필요
+		
+		// bId, id를 service에 넘겨서 글쓴이 비교 로직 작성
+		
+		// 게시글이 존재하면, 게시글 데이터(b)와 페이지(page)를 /views/board/detail.html로 전달
+		// 															ㄴ write.html 수정해서 사용
+		// 게시글이 존재하지 않으면, 사용자 정의 예외 발생
+		Board board = new Board();
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		
+		if(loginUser != null) {
+			board.setBoardWriter(loginUser.getId());
+		}
+		
+		board.setBoardId(bId);
+
+		Board b = bService.selectBoard(board);
+		if(b != null) {
+			mv.addObject("board", b).addObject("page", page).setViewName("detail");
+			return mv;
+		}else {
+			throw new BoardException("게시글이 존재하지 않습니다");
+		}
+	}
+	
+	@PostMapping("upForm")
+	public ModelAndView updateForm(@RequestParam("boardId") int bId, @RequestParam("page") int page,
+							HttpSession session, ModelAndView mv) {
+
+		Board b = bService.updateForm(bId);
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		
+		if(loginUser != null && loginUser.getId().equals(b.getBoardWriter())) {
+			mv.addObject("b", b).addObject("page", page).setViewName("views/board/edit");
+			return mv;
+		}else {
+			throw new BoardException("수정 권한이 없습니다");
+		}
+	}
+	
+	@PostMapping("update")
+	public String updateBoard(@ModelAttribute Board b, @RequestParam("page") int page,
+							  HttpSession session) {
+		
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		if(loginUser != null && loginUser.getId().equals((bService.updateForm(b.getBoardId())).getBoardWriter())) {
+			int result = bService.updateBoard(b);
+			
+			if(result>0) {
+//				return "redirect:/board/" + b.getBoardId() + "/" + page;
+				return String.format("redirect:/board/%d/%d", b.getBoardId(), page);
+			}else {
+				throw new BoardException("수정되지 않았습니다");
+			}
+		}else {
+			throw new BoardException("수정 권한이 없습니다");
+		}
+		
+	}
+	
+	@PostMapping("delete")
+	public String deleteBoard(@RequestParam("boardId") int bId, HttpSession session) {
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		if(loginUser != null && loginUser.getId().equals((bService.updateForm(bId)).getBoardWriter())) {
+			int result = bService.deleteBoard(bId);
+			if(result > 0) {
+				return "redirect:/board/list";
+			}else {
+				throw new BoardException("삭제되지 않았습니다");
+			}
+		}else{
+			throw new BoardException("삭제 권한이 없습니다");
+		}
 	}
 }

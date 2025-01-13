@@ -43,4 +43,6 @@ public class TemplateResolverConfig {
 		return bResolver;
 	}
 	
+	//스프링에서의 viewResolver는 url pattern에 따라 viewResolver가 정해진다
+	//스프링부트에서의 viewResolver는 VR1, VR2, VR3 이렇게 여러개 만들어져서 한 개씩 비교해 같은 게 있으면 바로 걔를 가져온다
 }
