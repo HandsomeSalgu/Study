@@ -51,4 +51,20 @@
 		set BOARD_STATUS = 'N'
 		where board_id = #{boardId}
 	</update>
+	
+	<select id="selectAttmBoardList" resultType="Attachment">
+		select *
+		from attachment
+		where ATTM_STATUS='Y' and attm_level = 0
+		order by attm_id
+	</select>
+	
+	<insert id="insertAttm">
+		insert all
+		<foreach collection="list" item="item" separator=" ">
+		into attachment
+		values(new_aid, seq_bid.currval, #{item.originalName}, #{item.renameName}, #{item.attmPath}, #{item.attmLevel}, default)
+		</foreach>
+		select * from dual
+	</insert>
 </mapper>

@@ -6,6 +6,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
 import kh.springboot.board.model.mapper.BoardMapper;
+import kh.springboot.board.model.vo.Attachment;
 import kh.springboot.board.model.vo.Board;
 import kh.springboot.board.model.vo.PageInfo;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,14 @@ public class BoardService {
 
 	public int deleteBoard(int bId) {
 		return mapper.deleteBoard(bId);
+	}
+
+	public ArrayList<Attachment> selectAttmBoardList() {
+		return mapper.selectAttmBoardList();
+	}
+
+	public int insertAttm(ArrayList<Attachment> list) {
+		return mapper.insertAttm(list);
 	}
 
 }

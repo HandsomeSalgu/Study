@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 
+import kh.springboot.board.model.vo.Attachment;
 import kh.springboot.board.model.vo.Board;
 
 @Mapper
@@ -23,6 +24,10 @@ public interface BoardMapper {
 	int updateBoard(Board b);
 
 	int deleteBoard(int bId);
+
+	ArrayList<Attachment> selectAttmBoardList();
+
+	int insertAttm(ArrayList<Attachment> list);
 
 
 
