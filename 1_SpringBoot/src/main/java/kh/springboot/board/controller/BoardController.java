@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/board")
+//RequestMapping({"/board", "/attm"}) 이라고 해도 되는데, 매번 if문으로 board일 때 attm인지를 나눠야 되기 때문에 상당히 번거로운 작업이 된다
 public class BoardController {
 	
 	private final BoardService bService;
@@ -36,7 +37,7 @@ public class BoardController {
 		
 		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5);	//일반 게시물은 5개씩 보기 때문에 5라고 넣어준다
 		ArrayList<Board> list = bService.selectBoardList(pi, 1);	//1은 보드 타입
-		System.out.println(list);
+
 		model.addAttribute("list",list).addAttribute("pi", pi);
 		model.addAttribute("loc", request.getRequestURI());
 		// getRequestURI() : /board/list
