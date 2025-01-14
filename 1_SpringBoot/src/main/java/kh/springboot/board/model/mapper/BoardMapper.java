@@ -25,7 +25,7 @@ public interface BoardMapper {
 
 	int deleteBoard(int bId);
 
-	ArrayList<Attachment> selectAttmBoardList();
+	ArrayList<Attachment> selectAttmBoardList(Integer bId);
 
 	int insertAttm(ArrayList<Attachment> list);
 
