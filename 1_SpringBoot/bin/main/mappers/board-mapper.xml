@@ -21,9 +21,16 @@
 		<result column="BOARD_STATUS" property="status"/>
 	</resultMap>
 	
+	<!-- selectKey 적용
+		 insert나 update시 사용할 키를 조회해서 파라미터로 전달받아 객체 필드에 대입
+	 -->
 	<insert id="insertBoard">
+		<selectKey order="BEFORE" resultType="_int" keyProperty="boardId">
+		<!-- 수행되기 전에 내가 먼저 수행이 되겠다 -->
+			select seq_bid.nextval from dual
+		</selectKey>
 		insert into board
-		values(SEQ_BID.nextval, #{boardTitle}, #{boardWriter}, #{boardContent},
+		values(#{boardId}, #{boardTitle}, #{boardWriter}, #{boardContent},
 			   default, sysdate, sysdate, default, #{boardType})
 	</insert>
 	
@@ -55,7 +62,13 @@
 	<select id="selectAttmBoardList" resultType="Attachment">
 		select *
 		from attachment
-		where ATTM_STATUS='Y' and attm_level = 0
+		where ATTM_STATUS='Y' and
+		<if test="boardId == null">
+		attm_level = 0
+		</if>
+		<if test="boardId != null">
+		REF_BOARD_ID = #{boardId}
+		</if>
 		order by attm_id
 	</select>
 	
@@ -63,7 +76,7 @@
 		insert all
 		<foreach collection="list" item="item" separator=" ">
 		into attachment
-		values(new_aid, seq_bid.currval, #{item.originalName}, #{item.renameName}, #{item.attmPath}, #{item.attmLevel}, default)
+		values(new_aid, #{item.refBoardId}, #{item.originalName}, #{item.renameName}, #{item.attmPath}, #{item.attmLevel}, default)
 		</foreach>
 		select * from dual
 	</insert>

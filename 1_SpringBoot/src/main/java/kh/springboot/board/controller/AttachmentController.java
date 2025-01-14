@@ -11,11 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -37,14 +38,15 @@ public class AttachmentController {
 	
 	@GetMapping("list")
 	public String selectList(@RequestParam(value="page", defaultValue="1") int currentPage, Model model, HttpServletRequest request) {
+		
+		
 		int listCount = bService.getListCount(2);
 		
 		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 9); 
 		
 		ArrayList<Board> bList = bService.selectBoardList(pi, 2);
-		ArrayList<Attachment> aList = bService.selectAttmBoardList();
+		ArrayList<Attachment> aList = bService.selectAttmBoardList(null);
 		
-		System.out.println(aList.get(0).getAttmPath());
 		
 		
 		if(bList != null) {
@@ -64,8 +66,7 @@ public class AttachmentController {
 	@Transactional	//모든 게 다 잘 됐을 때, 즉 아무런 이상이 없으면 commit, 한개라도 문제가 있으면 rollback
 	public String insertAttmBoard(@ModelAttribute Board b, @RequestParam("file") ArrayList<MultipartFile> files, HttpSession session) {
 																	//파일 관련은 무조건 MultipartFile로 해야된다
-		System.out.println(b);
-		System.out.println(files);
+		System.out.println("초기 b : " + b);
 		
 		String id = ((Member)session.getAttribute("loginUser")).getId();
 		b.setBoardWriter(id);
@@ -109,6 +110,12 @@ public class AttachmentController {
 		}else {
 			b.setBoardType(2);
 			result1 = bService.insertBoard(b);
+			System.out.println("insert 후 b : " + b);
+			
+			for(Attachment a : list) {
+				a.setRefBoardId(b.getBoardId());
+			}
+			
 			result2 = bService.insertAttm(list);
 		}
 		
@@ -168,6 +175,32 @@ public class AttachmentController {
 		return returnArr;
 	}
 	
+	@GetMapping("/{id}/{page}")
+	public ModelAndView selectAttachmentBoard(@PathVariable("id") int bId, @PathVariable("page") int page
+									  ,HttpSession session, ModelAndView mv) {
+		
+		String id = null;
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		if(loginUser != null) {
+			id = loginUser.getId();
+		}
+		
+		Board board = new Board();
+		board.setBoardId(bId);
+		board.setBoardWriter(id);
+		
+		Board b = bService.selectBoard(board);
+		ArrayList<Attachment> list = bService.selectAttmBoardList(bId);
+		
+		if(b != null) {
+			mv.addObject("board", b).addObject("page", page).addObject("list", list).setViewName("views/attm/detail");
+			return mv;
+		}else {
+			throw new BoardException("첨부파일 게시글 상세보기를 실패하였습니다.");
+		}
+		
+		
+	}
 	
 	
 	

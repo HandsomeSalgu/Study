@@ -25,7 +25,8 @@
 					<div class="col" th:each = "b : ${bList}">
 						<div class="card shadow-sm">
 							<th:block th:each="a:${aList}" th:if="${b.boardId eq a.refBoardId}">
-							<img th:if="${#strings.containsIgnoreCase(a.renameName, 'jpg') or #strings.containsIgnoreCase(a.renameName, 'png')}" th:src="${a.attmPath + '/' + a.renameName}" width="100%" height="225"/>
+							<img th:if="${#strings.containsIgnoreCase(a.renameName, 'jpg') or #strings.containsIgnoreCase(a.renameName, 'png')}" th:src="@{/}+${a.renameName}" width="100%" height="225"/>
+																																				<!-- 스프링부트에서 외부 자원을 끌어올 때는 설정이 더 필요하다 -->
 							<svg class="bd-placeholder-img card-img-top" width="100%" height="225" th:unless="${#strings.containsIgnoreCase(a.renameName, 'jpg') or #strings.containsIgnoreCase(a.renameName, 'png')}">
 								<rect width="100%" height="100%" fill="#55595c"/>
 								<text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
@@ -67,5 +68,27 @@
 			</div>
 		</div>
 	</main>
+	
+	<script th:inline="javascript">
+		window.onload = () =>{
+			const dives = document.getElementsByClassName('card');
+			console.log(dives);
+			for(const div of dives){
+				div.addEventListener('click', function(){
+					const boardId = this.querySelector('.bId').innerText.split(' ')[1]
+					console.log(boardId);
+					/*<![CDATA[*/
+					location.href = boardId + "/" + /*[[${pi.currentPage}]]*/1;
+					/*]]>*/
+				});
+			}
+		}
+		
+	</script>
+	
+	
+	
+	
+	
 </body>
 </html>
