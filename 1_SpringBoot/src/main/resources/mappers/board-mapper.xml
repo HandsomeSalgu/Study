@@ -49,7 +49,7 @@
 
 	<update id="updateBoard">
 		update board
-		set board_title = #{boardTitle}, board_content = #{boardContent}, board_modify_date = sysdate
+		set board_title = #{boardTitle}, board_content = #{boardContent}, board_modify_date = sysdate, board_type=#{boardType}
 		where board_id = #{boardId}
 	</update>
 	
@@ -80,4 +80,30 @@
 		</foreach>
 		select * from dual
 	</insert>
+	
+	<delete id="deleteAttm">
+		delete from ATTACHMENT
+		where RENAME_NAME in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<update id="updateAttmLevel">
+		update ATTACHMENT
+		set ATTM_LEVEL = 0
+		where ATTM_ID = (select min(attm_id) 
+						 from ATTACHMENT
+						 where ref_board_id = #{boardId})
+	</update>
+	
+	<!--  
+	<update id="statusNAttm">
+		update attachment
+		set attm_status = 'N'
+		where ref_board_id = #{bId}
+	</update>
+	-->
+	
+	
 </mapper>

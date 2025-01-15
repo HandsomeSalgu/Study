@@ -116,7 +116,9 @@ public class BoardController {
 							  HttpSession session) {
 		
 		Member loginUser = (Member)session.getAttribute("loginUser");
+		
 		if(loginUser != null && loginUser.getId().equals((bService.updateForm(b.getBoardId())).getBoardWriter())) {
+			b.setBoardType(1);
 			int result = bService.updateBoard(b);
 			
 			if(result>0) {
@@ -132,12 +134,14 @@ public class BoardController {
 	}
 	
 	@PostMapping("delete")
-	public String deleteBoard(@RequestParam("boardId") int bId, HttpSession session) {
+	public String deleteBoard(@RequestParam("boardId") int bId, HttpSession session, HttpServletRequest request) {
 		Member loginUser = (Member)session.getAttribute("loginUser");
 		if(loginUser != null && loginUser.getId().equals((bService.updateForm(bId)).getBoardWriter())) {
 			int result = bService.deleteBoard(bId);
 			if(result > 0) {
-				return "redirect:/board/list";
+//				return "redirect:/" + (request.getRequestURI().contains("board") ? "board" : "attm") + "/list";
+				return "redirect:/" + (request.getHeader("referer").contains("board") ? "board" : "attm") + "/list";
+				//getHeader는 전에 있던 url을 보는 것, getRequestURI는 현재 urI를 참고하기 때문에 board로 넘어갈 수 밖에 없다
 			}else {
 				throw new BoardException("삭제되지 않았습니다");
 			}
