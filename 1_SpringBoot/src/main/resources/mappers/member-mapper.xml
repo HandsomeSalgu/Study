@@ -61,5 +61,11 @@
 		set MEMBER_STATUS = 'N'
 		where id=#{id}
 	</update>
+	
+	<select id="checkValue" resultType="_int">
+		select count(*)
+		from member
+		where ${column} = #{value}
+	</select>
 </mapper>
 	

@@ -1,5 +1,6 @@
 package kh.springboot.member.controller;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -265,5 +267,20 @@ public class MemberController {
 		}
 		throw new MemberException("회원 탈퇴 실패");
 	}
+
+	@GetMapping("checkValue")
+	@ResponseBody
+	public int checkValue(@RequestParam("value") String value, @RequestParam("column") String column) {
+		
+		HashMap<String, String> map = new HashMap<>();
+		map.put("value", value);
+		map.put("column", column);
+		
+		int count = mService.checkValue(map);
+		
+		return count;
+	}
+	
+	
 	
 }

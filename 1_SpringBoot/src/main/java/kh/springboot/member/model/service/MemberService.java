@@ -39,4 +39,8 @@ public class MemberService {
 		return mapper.deleteUser(id);
 	}
 
+	public int checkValue(HashMap<String, String> map) {
+		return mapper.checkValue(map);
+	}
+
 }
