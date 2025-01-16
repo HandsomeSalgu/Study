@@ -23,5 +23,7 @@ public interface MemberMapper {
 	int updatePwd(Member m);
 
 	int deleteUser(String id);
+
+	int checkValue(HashMap<String, String> map);
 	
 }
