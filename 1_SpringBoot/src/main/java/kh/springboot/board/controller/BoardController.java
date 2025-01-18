@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kh.springboot.board.exception.BoardException;
 import kh.springboot.board.model.service.BoardService;
@@ -149,4 +153,50 @@ public class BoardController {
 			throw new BoardException("삭제 권한이 없습니다");
 		}
 	}
+	
+//	//resoponse에 content파일을 관리할 수 있게 하는 속성
+//	@GetMapping(value="top", produces = "application/json; charset=UTF-8")					
+//	@ResponseBody
+//	public String selectTop(/*HttpServletResponse response*/) {
+//		ArrayList<Board> list = bService.selectTop();
+//		
+//		System.out.println(list);
+//		
+//		JSONArray array = new JSONArray();
+//		for(Board b : list) {
+//			JSONObject json = new JSONObject();
+//			json.put("boardId", b.getBoardId());
+//			json.put("boardTitle", b.getBoardTitle());
+//			json.put("nickName", b.getNickName());
+//			json.put("modifyDate", b.getModifyDate());
+//			json.put("boardCount", b.getBoardCount());
+//			
+//			array.put(json);
+//		}
+//		
+////		response.setContentType("application/json; charset=UTF-8");
+//		
+//		return array.toString();
+//	}
+	
+	@GetMapping("top")
+	public void selectTop(HttpServletResponse response) {
+		ArrayList<Board> list = bService.selectTop();
+		response.setContentType("application/json; charset=UTF-8");
+//		Gson gson = new Gson();
+//		GsonBuilder gb = new GsonBuilder();
+//		GsonBuilder dfgb = gb.setDateFormat("yyyy-MM-dd");
+//		Gson gson = dfgb.create();
+		GsonBuilder gb = new GsonBuilder().setDateFormat("yyyy-MM-dd");
+		Gson gson = gb.create();
+		try {
+			gson.toJson(list, response.getWriter());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
 }

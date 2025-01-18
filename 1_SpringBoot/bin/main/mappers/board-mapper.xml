@@ -105,5 +105,14 @@
 	</update>
 	-->
 	
+	<select id="selectTop" resultMap="boardResultSet">
+		select *
+		from (select *
+			from board
+				join member on(id = board_writer)
+			where board_status = 'Y'
+			order by board_count desc)
+		where rownum <![CDATA[<]]>= 5
+	</select>
 	
 </mapper>

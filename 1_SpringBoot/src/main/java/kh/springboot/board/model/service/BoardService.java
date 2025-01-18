@@ -34,7 +34,7 @@ public class BoardService {
 	public Board selectBoard(Board b) {
 		Board board = mapper.selectBoard(b);
 
-		if(board != null && board.getBoardWriter().equals(b.getBoardWriter())) {
+		if(board != null && !board.getBoardWriter().equals(b.getBoardWriter())) {
 			int result = mapper.updateCount(b.getBoardId());
 			if(result>0) {
 				board.setBoardCount(board.getBoardCount()+1);
@@ -73,6 +73,10 @@ public class BoardService {
 	public void updateAttmLevel(int boardId) {
 		mapper.updateAttmLevel(boardId);
 		
+	}
+
+	public ArrayList<Board> selectTop() {
+		return mapper.selectTop();
 	}
 
 //	public int statusNAttm(int bId) {
