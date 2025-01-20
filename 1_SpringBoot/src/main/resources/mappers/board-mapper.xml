@@ -115,4 +115,17 @@
 		where rownum <![CDATA[<]]>= 5
 	</select>
 	
+	<select id="selectReplyList" resultType="Reply">
+		select *
+		from reply
+			 join member on(id= REPLY_WRITER)
+		where REF_BOARD_ID = #{bId} and REPLY_STATUS ='Y'
+		order by REPLY_ID desc
+	</select>
+	
+	<insert id="insertReply">
+		insert into reply
+		values(SEQ_RID.nextval, #{replyContent}, #{refBoardId}, #{replyWriter}, sysdate, sysdate, default)
+	</insert>
+	
 </mapper>
