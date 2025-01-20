@@ -7,6 +7,7 @@ import org.apache.ibatis.session.RowBounds;
 
 import kh.springboot.board.model.vo.Attachment;
 import kh.springboot.board.model.vo.Board;
+import kh.springboot.board.model.vo.Reply;
 
 @Mapper
 public interface BoardMapper {
@@ -34,6 +35,10 @@ public interface BoardMapper {
 	void updateAttmLevel(int boardId);
 
 	ArrayList<Board> selectTop();
+
+	ArrayList<Reply> selectReplyList(int bId);
+
+	int insertReply(Reply r);
 
 //	int statusNAttm(int bId);
 

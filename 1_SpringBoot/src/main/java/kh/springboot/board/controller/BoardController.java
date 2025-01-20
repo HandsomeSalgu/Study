@@ -1,5 +1,6 @@
 package kh.springboot.board.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Controller;
@@ -10,8 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -22,6 +26,7 @@ import kh.springboot.board.exception.BoardException;
 import kh.springboot.board.model.service.BoardService;
 import kh.springboot.board.model.vo.Board;
 import kh.springboot.board.model.vo.PageInfo;
+import kh.springboot.board.model.vo.Reply;
 import kh.springboot.common.Pagination;
 import kh.springboot.member.model.vo.Member;
 import lombok.RequiredArgsConstructor;
@@ -92,7 +97,11 @@ public class BoardController {
 		board.setBoardId(bId);
 
 		Board b = bService.selectBoard(board);
+		ArrayList<Reply> list = bService.selectReplyList(bId);
+		
+		
 		if(b != null) {
+			mv.addObject("list", list);
 			mv.addObject("board", b).addObject("page", page).setViewName("detail");
 			return mv;
 		}else {
@@ -195,6 +204,82 @@ public class BoardController {
 			e.printStackTrace();
 		}
 	}
+	
+	//JSON 버전
+//	@GetMapping("rinsert")
+//	@ResponseBody
+//	public String insertReply(@ModelAttribute Reply r, HttpServletResponse response) {
+//		System.out.println(r);
+//		int result = bService.insertReply(r);
+//		ArrayList<Reply> list = bService.selectReplyList(r.getRefBoardId());
+//			
+//			response.setContentType("application/json; charset=UTF-8");
+//			
+//			JSONArray array = new JSONArray();
+//			for(Reply reply : list) {
+//				JSONObject json = new JSONObject();
+//				json.put("replyContent", reply.getReplyContent());
+//				json.put("nickName", reply.getNickName());
+//				json.put("replyModifyDate", reply.getReplyModifyDate() + "");
+//				
+//				array.put(json);
+//			}
+//			
+//			return array.toString();
+//	}
+	
+	//GSON 버전
+//	@GetMapping("rinsert")
+//	public void insertReply(@ModelAttribute Reply r, HttpServletResponse response) {
+//		int result = bService.insertReply(r);
+//		ArrayList<Reply> list = bService.selectReplyList(r.getRefBoardId());
+//		response.setContentType("application/json; charset=UTF-8");
+//		
+//		GsonBuilder gb = new GsonBuilder().setDateFormat("yyyy-MM-dd");
+//		Gson gson = gb.create();
+//		
+//		try {
+//			gson.toJson(list, response.getWriter());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+	
+	//jackson 버전
+	@GetMapping(value="rinsert", produces = "application/json; charset=UTF-8")
+	@ResponseBody
+	public String insertReply(@ModelAttribute Reply r, HttpServletResponse response) {
+		int result = bService.insertReply(r);
+		ArrayList<Reply> list = bService.selectReplyList(r.getRefBoardId());
+		
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		
+		ObjectMapper om = new ObjectMapper();
+		
+		om.setDateFormat(sdf);
+		
+		String strJson = null;
+		try {
+			strJson = om.writeValueAsString(list);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return strJson;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

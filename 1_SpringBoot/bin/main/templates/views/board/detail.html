@@ -39,6 +39,33 @@
 						</th:block>
 						<button class="w-100 btn btn-dark btn-lg" type="button" onclick="javascript:history.back();">BACK</button>
 						
+						<br>
+						
+						<div class="input-group">
+							<span class="input-group-text">REPLY<br>CONTENT</span>
+							<textarea class="form-control" rows="3" id="replyContent" style="resize:none;"></textarea>
+							<button class="btn btn-outline-success btn-lg" id="replySubmit" type="button" th:disabled="${session.loginUser == null}">SUBMIT</button>
+						</div>
+						
+						<br>
+						
+						<table class="table">
+							<thead>
+								<tr>
+									<th width="130px">작성자</th>
+									<th>작성내용</th>
+									<th width="130px">작성일자</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="r : ${list}">
+									<td>[[${r.nickName}]]</td>
+									<td>[[${r.replyContent}]]</td>
+									<td>[[${r.replyModifyDate}]]</td>
+								</tr>
+							</tbody>
+						</table>
+						
 					</div>
 				</form>
 			</div>
@@ -67,9 +94,7 @@
 	   		
 	</div>
 	
-	<script>
-		
-		
+	<script th:inline="javascript">
 		window.onload = () =>{
 			let hostIndex = location.href.indexOf( location.host ) + location.host.length;
 			let contextPath = location.href.substring( hostIndex, location.href.indexOf('/', hostIndex + 1) );
@@ -91,15 +116,59 @@
 			//					-> 수정 성공 시 해당 게시글 상세보기로
 			
 			//삭제 (/delete)		-> 삭제 성공 시 게시글 전체 목록으로
+			const deleteModal = document.getElementById("deleteModal")
+			if(deleteModal != null){
+				deleteModal.addEventListener('click', ()=>{
+					$('#modalChoice').modal('show');
+				});
+			}
 			
-			document.getElementById("deleteModal").addEventListener('click', ()=>{
-				$('#modalChoice').modal('show');
-			});
+			
 			
 			document.getElementById('delete').addEventListener('click', ()=>{
 				form.action = contextPath +'/board/delete';
 				form.submit();
 			});
+			
+			/*<![CDATA[*/
+			document.getElementById('replySubmit').addEventListener('click', ()=>{
+				$.ajax({
+					url: contextPath +'/board/rinsert',
+					data: {
+						replyContent: document.getElementById('replyContent').value,
+						refBoardId: /*[[${board.boardId}]]*/1,
+						replyWriter: /*[[${session.loginUser != null ? session.loginUser.id : ''}]]*/'user01'
+					},
+					success: data=>{
+						console.log(data)
+						const tbody = document.querySelector('tbody');
+						tbody.innerHTML = "";
+						
+						for(const obj of data){
+							const tr = document.createElement('tr');
+							
+							const contentTd = document.createElement('td');
+							contentTd.innerText = obj.replyContent;
+							
+							const nickTd = document.createElement('td');
+							nickTd.innerText = obj.nickName;
+							
+							const modifyDateTd = document.createElement('td');
+							modifyDateTd.innerText = obj.replyModifyDate;
+							
+							tr.append(nickTd);
+							tr.append(contentTd);
+							tr.append(modifyDateTd);
+							
+							tbody.append(tr);
+							
+						}
+						document.getElementById('replyContent').value ='';
+					},
+					error: data=> console.log(data)
+				})
+			});
+			/*]]>*/
 
 		}
 	</script>
