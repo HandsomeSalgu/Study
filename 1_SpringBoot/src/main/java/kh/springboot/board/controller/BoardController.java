@@ -270,6 +270,15 @@ public class BoardController {
 		return strJson;
 	}
 	
+	@GetMapping(value = "rdelete")
+	@ResponseBody
+	public int deleteReply(@ModelAttribute Reply r) {
+		
+		int result = bService.deleteReply(r.getReplyId());
+		
+		return result;
+		
+	}
 	
 	
 	
