@@ -128,4 +128,10 @@
 		values(SEQ_RID.nextval, #{replyContent}, #{refBoardId}, #{replyWriter}, sysdate, sysdate, default)
 	</insert>
 	
+	<update id="deleteReply">
+		update reply
+		set REPLY_STATUS = 'N'
+		where REPLY_ID = #{replyId}
+	</update>
+	
 </mapper>
