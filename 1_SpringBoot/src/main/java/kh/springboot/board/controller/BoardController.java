@@ -270,7 +270,7 @@ public class BoardController {
 		return strJson;
 	}
 	
-	@GetMapping(value = "rdelete")
+	@GetMapping("rdelete")
 	@ResponseBody
 	public int deleteReply(@ModelAttribute Reply r) {
 		
@@ -280,8 +280,15 @@ public class BoardController {
 		
 	}
 	
-	
-	
+	@GetMapping("rupdate")
+	@ResponseBody
+	public int updateReply(@ModelAttribute Reply r) {
+		
+		int result = bService.updateReply(r);
+		
+		return result;
+		
+	}
 	
 	
 	

@@ -42,6 +42,8 @@ public interface BoardMapper {
 
 	int deleteReply(int replyId);
 
+	int updateReply(Reply r);
+
 //	int statusNAttm(int bId);
 
 
