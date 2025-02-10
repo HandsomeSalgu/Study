@@ -125,12 +125,11 @@ public class BoardController {
 	}
 	
 	@PostMapping("update")
-	public String updateBoard(@ModelAttribute Board b, @RequestParam("page") int page,
-							  HttpSession session) {
+	public String updateBoard(@ModelAttribute Board b, @RequestParam("page") int page) {
 		
-		Member loginUser = (Member)session.getAttribute("loginUser");
+	
 		
-		if(loginUser != null && loginUser.getId().equals((bService.updateForm(b.getBoardId())).getBoardWriter())) {
+		
 			b.setBoardType(1);
 			int result = bService.updateBoard(b);
 			
@@ -140,9 +139,7 @@ public class BoardController {
 			}else {
 				throw new BoardException("수정되지 않았습니다");
 			}
-		}else {
-			throw new BoardException("수정 권한이 없습니다");
-		}
+		
 		
 	}
 	

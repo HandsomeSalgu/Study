@@ -38,7 +38,17 @@
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<a><label>Find ID/PWD</label></a>
 			</div>
+			<input type="hidden" name="beforeURL"/>
 		</form>
 	</main>
+	<script>
+		window.onload = () =>{
+			const beforeURL = document.referrer;
+			document.getElementsByName('beforeURL')[0].value = beforeURL;
+			
+			console.log(beforeURL);
+		}
+		
+	</script>
 </body>
 </html>
