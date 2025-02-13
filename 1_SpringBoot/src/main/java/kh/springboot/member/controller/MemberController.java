@@ -1,5 +1,9 @@
 package kh.springboot.member.controller;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpSession;
@@ -304,6 +309,54 @@ public class MemberController {
 		int count = mService.checkValue(map);
 		
 		return count;
+	}
+	
+	@PostMapping("profile")
+	@ResponseBody
+	public int updateProfile(@RequestParam(value="profile", required=false) MultipartFile profile, Model model) {
+		//System.out.println(profile);
+		
+		Member m = (Member)model.getAttribute("loginUser");
+		
+		String savePath = "d:\\dev\\profiles";
+		File folder = new File(savePath);
+		if(!folder.exists()) folder.mkdirs();	// if문이 한줄이면 중괄호 생략 가능 두줄이상부터는 중괄호 생략 불가능.. 근데 중괄호 없는 것보다 있는게 좋긴함
+		
+		if(m.getProfile() != null) {
+			File f = new File(savePath + "\\" + m.getProfile());
+			f.delete();
+		}
+		
+		String renameFileName = null;
+		if(profile != null) {
+			
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		int ranNum = (int)(Math.random()*1000000);
+		String originFileName = profile.getOriginalFilename();
+		 renameFileName= sdf.format(new Date()) + ranNum + originFileName.substring(originFileName.lastIndexOf("."));
+		
+		try {
+			profile.transferTo(new File(folder + "\\" + renameFileName));
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+		}
+	
+		}
+		
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("id", m.getId());
+		map.put("profile", renameFileName);
+		
+		int result = mService.updateProfile(map);
+		if(result > 0) {
+			m.setProfile(renameFileName);
+			model.addAttribute("loginUser", m);
+		}
+		
+		return result;
+		
+		// Ensure that the compiler uses the '-parameters' flag. 이런 오류가 뜨면?
+		
 	}
 	
 	

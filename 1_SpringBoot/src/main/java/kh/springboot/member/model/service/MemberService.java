@@ -43,4 +43,8 @@ public class MemberService {
 		return mapper.checkValue(map);
 	}
 
+	public int updateProfile(HashMap<String, String> map) {
+		return mapper.updateProfile(map);
+	}
+
 }
