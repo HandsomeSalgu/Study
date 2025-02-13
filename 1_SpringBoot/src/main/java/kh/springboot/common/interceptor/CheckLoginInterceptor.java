@@ -20,7 +20,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor{
 		if(loginUser == null) {
 			String url = request.getRequestURI();
 			String msg = null;
-			String regExp = "/(board|attm)/\\d+/\\d+";
+			String regExp = "/cuteChang/(board|attm)/\\d+/\\d+";
 			// 로그인 후 이용하세요
 			// 로그인 세션이 만료되어 로그인 화면으로 넘어갑니다
 			if(Pattern.matches(regExp, url)) {

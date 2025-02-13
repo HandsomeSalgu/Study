@@ -18,6 +18,23 @@
       <div class="container py-4">
          <div class="p-5 mb-4 bg-light rounded-3">
             <div class="container-fluid py-5">
+				<div data-bs-toggle="dropdown" style="width: 100px; height: 100px; float: left; margin-right: 50px; border: 2px dashed black; border-radius:50%; overflow: hidden; cursor: pointer;">
+					<th:block th:if="${session.loginUser.profile == null}">
+					<img th:src="|@{/}/image/no_image.png|" width="100%" height="100%">	
+					</th:block>
+					<th:block th:unless="${session.loginUser.profile == null}">
+					<img th:src="@{/}+${session.loginUser.profile}" width="100%" height="100%">
+					</th:block>	
+				</div>
+					
+					<input type="file" accept="image/*" style="display:none;" onchange="loadImage(this);">
+										<!-- 파일확장자가 이미지에 관련된 것만 가져오겠다  -->
+					<!-- 위치를 인풋 아래로 옮겨서? -->
+					<ul class="dropdown-menu dropdown-menu-end shadow">
+						<li><button class="dropdown-item">프로필 변경하기</button>
+						<li><button class="dropdown-item">프로필 삭제하기</button>
+					</ul>													<!-- overflow: 넘친거 hidden: 안보이게 -->
+				
                <h1 class="display-5 fw-bold">
                   <abbr title="if you click this, you can go main page(/home).">
                      <a th:href="|@{/}home|">[[${session.loginUser.nickName}]]'s Information</a>
@@ -134,7 +151,12 @@
    </div>
    
    <script th:inline="javascript">
+   	
+   let hostIndex = location.href.indexOf( location.host ) + location.host.length;
+	 let contextPath = location.href.substring( hostIndex, location.href.indexOf('/', hostIndex + 1) );
       window.onload = () => {
+    	  
+    	 
          // 로그인이 안 되어 있으면 로그인 후 이용해달라는 alert창 띄운 후 로그인 화면으로 
          /*<![CDATA[*/
          const loginUser = /*[[${session.loginUser}]]*/'loginUser'; 	// natural template, 서버가 있을 때도 잘되고, 없을 때도 잘되게 만드는 것
@@ -148,7 +170,59 @@
          document.getElementById('delete').addEventListener('click', ()=>{
             $('#modalChoice').modal('show');
          });
+         
+     	document.querySelector('.dropdown-menu>li:first-child').addEventListener('click', () =>{
+			document.querySelector('input[type=file]').click();
+		});
+		
+		document.querySelector('.dropdown-menu>li:last-child').addEventListener('click', () =>{
+			loadImage();
+		});
+		
+		
       }
+      
+      const loadImage = file => {
+			// console.log(file);
+			// 프로필 preview
+			
+			let imgFile = null;
+			if(file != undefined){
+			const reader = new FileReader();
+			console.log(reader);
+			reader.addEventListener('load', function(){
+				
+				file.previousElementSibling.children[0].src = this.result;
+			});
+			imgFile = file.files[0];
+			reader.readAsDataURL(imgFile);
+			}
+			
+			// 프로필 서버에 넘기기
+			// 파일데이터를 넘겨야해서
+			const formData = new FormData();
+			formData.append('profile', imgFile);
+			$.ajax({
+				url: contextPath + '/member/profile',
+				data: formData,
+				type: 'post',
+				processData: false, // data를 String으로 변환 여부
+				contentType: false, // 전달하는 데이터 형식(false: 설정하지 않음, application/x-www-form-urlencoded)
+				success: data => {
+					//console.log(data);
+					if(data != 1){
+						alert('프로필 변경을 실패하였습니다. 다시 시도해주세요.');
+						location.reload();
+					}
+					if(imgFile == null){
+						document.querySelector('.container-fluid.py-5 img').src = contextPath + '/image/no_image.png';
+					}
+				},
+				error:data => console.log(data)
+			})
+      }
+      
+      
    </script>
 </body>
 </html>

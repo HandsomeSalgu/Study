@@ -56,6 +56,15 @@
 									<option>nate.com</option>
 									<option>hanmail.net</option>
 								</select>
+								<button type="button" class="btn btn-outline-success" id="sendEmail">인증번호</button>
+							</div>
+						</div>
+						
+						<div class="col-12" style="display:none;">
+							<label class="form-label">EMAIL CONFIRM</label>
+							<div class="input-group">
+								<input type="text" class="form-control">
+								<button type="button" class="w-25 btn btn-outline-success" id="verifyBtn">인증번호 확인</button>
 							</div>
 						</div>
 						
@@ -92,6 +101,8 @@
 	</div>
 	
 	<script>
+	 	let hostIndex = location.href.indexOf( location.host ) + location.host.length;
+	 	let contextPath = location.href.substring( hostIndex, location.href.indexOf('/', hostIndex + 1) );
 		window.onload = () =>{
 			document.getElementById('id').addEventListener('change' ,function(){
 				checkValue(this);
@@ -100,6 +111,26 @@
 			document.getElementById('nickName').addEventListener('change' ,function(){
 				checkValue(this);
 			});
+			
+			//인증번호 버튼을 누르면 이벤트 발생
+			// 이메일 아이디가 입력되지 않으면 '이메일이 입력되지 않았습니다.'라는 알림창 후 이메일 아이디 쪽으로 커서 이동
+			// 이메일 아이디가 입력됐으면 /member/echeck 로 이메일을 전달하는 비동기 통신 작성
+			document.getElementById("sendEmail").addEventListener('click', ()=>{
+				const emailId = document.querySelector('#emailId').value.trim();
+				if(emailId == ''){
+					alert('이메일이 입력되지 않았습니다.');
+					document.querySelector('#emailId').focus();
+				}else{
+					$.ajax({
+						url: contextPath + '/member/echeck',
+						data: {email : emailId + '@' + document.querySelector('select[name=emailDomain]').value},
+						success : data=>{
+							console.log(data)
+						},
+						error: data=>console.log(data)
+					});
+				}
+			})
 		}
 		
 		const checkValue = obj =>{
