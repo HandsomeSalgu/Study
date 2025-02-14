@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,10 +23,13 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
 import kh.springboot.member.exception.MemberException;
 import kh.springboot.member.model.service.MemberService;
 import kh.springboot.member.model.vo.Member;
+import kh.springboot.member.model.vo.TodoList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +59,8 @@ public class MemberController {
 	private final BCryptPasswordEncoder bcrypt;
 	
 //	private Logger log = LoggerFactory.getLogger(MemberController.class);
+	
+	private final JavaMailSender mailSender;
 	
 	@GetMapping("signIn")
 	public String singIn() {
@@ -212,8 +219,12 @@ public class MemberController {
 			
 			//내가 쓴 글과 내가 쓴 댓글을 한 번에 받아오는 법
 			ArrayList<HashMap<String, Object>> list = mService.selectMyList(id);
-			mv.addObject("list", list);
-			mv.setViewName("views/member/myInfo");
+			
+			ArrayList<TodoList> todoList = mService.selectTodoList(id);
+			System.out.println(todoList);
+			
+			mv.addObject("list", list).addObject("todoList", todoList);
+			mv.setViewName("myInfo");
 		}
 		return mv;
 	}
@@ -359,6 +370,43 @@ public class MemberController {
 		
 	}
 	
+	@GetMapping("echeck")
+	public String checkEmail(@RequestParam("email") String email) {
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		
+		String subject = "[SpringBoot] 이메일 확인";
+		String body = "<h1 align='center'>SpringBoot 이메일 확인</h1><br>";
+		body += "<div style='border: 3px solid green; text-align: center; font-size: 15px;>본 메일은 이메일을 확인하기 위해 발송되었습니다.<br>";
+		body +="아래 숫자를 인증번호 확인란에 작성하여 확인해주시기 바랍니다.<br><br>";
+		
+		String random ="";
+		for(int i = 0; i<5; i++) {
+			random += (int)(Math.random() * 10);
+		}
+		
+		body += "<span style='font-size: 30px; text-decoration: underline;'><b>" + random + "</b></span><br></div>";
+		
+		MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+		
+		try {
+			mimeMessageHelper.setSubject(subject);
+			mimeMessageHelper.setText(body, true);
+			mimeMessageHelper.setTo(email);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		mailSender.send(mimeMessage);
+		return random;
+	}
 	
 	
+	
+	
+	@GetMapping("linsert")
+	@ResponseBody
+	public int insertTodo(@ModelAttribute TodoList todo) {
+		return mService.insertTodo(todo);
+	}
 }

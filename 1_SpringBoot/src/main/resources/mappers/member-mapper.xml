@@ -73,5 +73,17 @@
 		set profile = #{profile}
 		where id = #{id}
 	</update>
+	
+	<select id="selectTodoList">
+		select *
+		from todo_list
+		where writer= #{id}
+		order by todo_num
+	</select>
+	
+	<insert id="insertTodo">
+		insert into todo_list
+		values(seq_lid.nextval, #{todo}, #{writer}, default, default)
+	</insert>
 </mapper>
 	
