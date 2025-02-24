@@ -32,5 +32,8 @@ public interface MemberMapper {
 	ArrayList<TodoList> selectTodoList(String id);
 
 	int insertTodo(TodoList todo);
-	
+
+	int updateTodo(TodoList todo);
+
+	int ldelete(TodoList todo);
 }

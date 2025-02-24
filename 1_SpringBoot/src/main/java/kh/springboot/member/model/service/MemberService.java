@@ -56,4 +56,12 @@ public class MemberService {
 		return mapper.insertTodo(todo);
 	}
 
+	public int updateTodo(TodoList todo) {
+		return mapper.updateTodo(todo);
+	}
+
+	public int ldelete(TodoList todo) {
+		return mapper.ldelete(todo);
+	}
+
 }
