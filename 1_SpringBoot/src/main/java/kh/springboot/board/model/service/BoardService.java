@@ -96,6 +96,10 @@ public class BoardService {
 		return mapper.updateReply(r);
 	}
 
+	public ArrayList<Board> selectRecentBoards() {
+		return mapper.selectRecentBoards();
+	}
+
 //	public int statusNAttm(int bId) {
 //		return mapper.statusNAttm(bId);
 //	}

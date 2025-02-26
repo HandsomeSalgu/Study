@@ -60,7 +60,7 @@
 		
 		<!-- Rolling 중에서도 TimeBased 정책 선택 : 시간에 따라 = Daily -->
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>D:/logs/member/login.%d{yyyyMMdd}.log</fileNamePattern>
+			<fileNamePattern>D:/logs/member/login.log.%d{yyyyMMdd}</fileNamePattern>
 		</rollingPolicy>
 	</appender>
 	

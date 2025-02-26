@@ -140,4 +140,29 @@
 		where REPLY_ID = #{replyId}
 	</update>
 	
+	<select id="selectRecentBoards" resultMap="boardResultSet">
+		<!-- 일반 게시글 중 최근에 작성된 글 다섯개 -->
+		<!-- 첨부파일 게시글 중 최근에 작성된 글 다섯개 -->
+		<![CDATA[
+		select board_id, board_title, nickname, board_create_date, board_count, board_type
+		from (select *
+		      from board
+		           join member on(id = board_writer)
+		      where board_type = 1 and board_status = 'Y'
+		      order by board_id desc)
+		where rownum <= 5
+		
+		union
+		
+		select board_id, board_title, nickname, board_create_date, board_count, board_type
+		from (select *
+		      from board
+		           join member on(id = board_writer)
+		      where board_type = 2 and board_status = 'Y'
+		      order by board_id desc)
+		where rownum <= 5
+		order by board_id desc
+		]]>
+	</select>
+	
 </mapper>

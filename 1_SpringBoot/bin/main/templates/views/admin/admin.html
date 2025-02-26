@@ -40,7 +40,12 @@
 									<th>Date</th>
 									<th>Views</th>
 								</tr>
-								<tr> 
+								<tr th:each="b:${list}" th:if="${b.boardType == 1}">
+									<th>[[${b.boardId}]]</th>
+									<th>[[${b.boardTitle}]]</th>
+									<th>[[${b.nickName}]]</th>
+									<th>[[${b.createDate}]]</th>
+									<th>[[${b.boardCount}]]</th>
 								</tr>
 							</table>
 						</div>
@@ -56,7 +61,12 @@
 									<th>Date</th>
 									<th>Views</th>
 								</tr>
-								<tr>
+								<tr th:each="a:${list}" th:if="${a.boardType == 2}">
+									<th>[[${a.boardId}]]</th>
+									<th>[[${a.boardTitle}]]</th>
+									<th>[[${a.nickName}]]</th>
+									<th>[[${a.createDate}]]</th>
+									<th>[[${a.boardCount}]]</th>
 								</tr>
 							</table>
 						</div>
@@ -67,36 +77,90 @@
 	</div>
 	
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js" integrity="sha384-gdQErvCNWvHQZj6XZM0dNsAoY4v+j5P1XDpNkcM3HJG1Yx04ecqIHk7+4VBOCHOG" crossorigin="anonymous"></script>
-    <script>
+    <script th:inline="javascript">
 		/* globals Chart:false */
-
-		(() => {
-			'use strict'
-
-			// Graphs
+		const getDateFormat = date =>{
+			const year = (date.getFullYear() + "").slice(-2);
+			const month = ('0' + (date.getMonth()+1)).slice(-2);
+			const day = ('0' + date.getDate()).slice(-2);
+			
+			return year+ '-' + month + '-' + day;
+		}
+		
+		const today = new Date();
+		const getThatDays = n =>{
+			return new Date(new Date().setDate(today.getDate() - n));
+		}
+		
+		/*<![CDATA[*/const data = /*[[${dateCount}]]*/null;/*]]!>*/
+		window.onload = () => {
+			sevenDays();
+			allDays();
+		}
+		
+		const allDays = () =>{
+			
+			const date = [];
+			const count = [];
+			for(const i in data){
+				date.push(i);
+				count.push(data[i]);
+			}
+			
+			const ctx = document.getElementById('allDays')
+			// eslint-disable-next-line no-unused-vars
+			const myChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: 
+						date,
+					datasets: [{
+						data: 
+							count,
+						lineTension: 0,
+						backgroundColor: 'transparent',
+						borderColor: '#007bff',
+						borderWidth: 4,
+						pointBackgroundColor: '#007bff'
+					}]
+				},
+				options: {
+					plugins: {
+						legend: {
+							display: false
+						},
+						tooltip: {
+							boxPadding: 3
+						}
+					}
+				}
+			})
+		}
+		
+		const sevenDays = () =>{
 			const ctx = document.getElementById('sevenDays')
 			// eslint-disable-next-line no-unused-vars
 			const myChart = new Chart(ctx, {
 				type: 'line',
 				data: {
 					labels: [
-						'Sunday',
-						'Monday',
-						'Tuesday',
-						'Wednesday',
-						'Thursday',
-						'Friday',
-						'Saturday'
+						getDateFormat(getThatDays(6)),
+						getDateFormat(getThatDays(5)),
+						getDateFormat(getThatDays(4)),
+						getDateFormat(getThatDays(3)),
+						getDateFormat(getThatDays(2)),
+						getDateFormat(getThatDays(1)),
+						getDateFormat(today)
 					],
 					datasets: [{
 						data: [
-							15339,
-							21345,
-							18483,
-							24003,
-							23489,
-							24092,
-							12034
+							data[getDateFormat(getThatDays(6))] == undefined ? 0 : data[getDateFormat(getThatDays(6))],
+							data[getDateFormat(getThatDays(5))] == undefined ? 0 : data[getDateFormat(getThatDays(5))],
+							data[getDateFormat(getThatDays(4))] == undefined ? 0 : data[getDateFormat(getThatDays(4))],
+							data[getDateFormat(getThatDays(3))] == undefined ? 0 : data[getDateFormat(getThatDays(3))],
+							data[getDateFormat(getThatDays(2))] == undefined ? 0 : data[getDateFormat(getThatDays(2))],
+							data[getDateFormat(getThatDays(1))] == undefined ? 0 : data[getDateFormat(getThatDays(1))],
+							data[getDateFormat(today)] == undefined ? 0 : data[getDateFormat(today)]
 						],
 						lineTension: 0,
 						backgroundColor: 'transparent',
@@ -116,7 +180,7 @@
 					}
 				}
 			})
-		})();
+		}
 	</script>
 </body>
 </html>
