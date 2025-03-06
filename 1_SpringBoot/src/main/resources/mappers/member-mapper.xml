@@ -20,7 +20,7 @@
 		insert into member
 		values(#{id}, #{pwd}, #{name}, #{nickName}, 
 			   #{email}, #{gender}, #{age}, #{phone},
-			   #{address}, default, default, default, default)
+			   #{address}, sysdate, sysdate, default, default, null)
 	</insert>
 	
 	<select id="selectMyList" resultType="map">
@@ -101,5 +101,16 @@
 		delete from todo_list
 		where todo_num = #{todoNum}
 	</delete>
+	
+	<select id="selectMembers">
+		select *
+		from member
+	</select>
+	
+	<update id="updateMemberItem">
+		update member
+		set ${column} = #{value}
+		where id= #{id}
+	</update>
 </mapper>
 	

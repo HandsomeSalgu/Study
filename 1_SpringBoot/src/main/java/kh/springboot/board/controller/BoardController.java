@@ -185,22 +185,22 @@ public class BoardController {
 //		return array.toString();
 //	}
 	
-	@GetMapping("top")
-	public void selectTop(HttpServletResponse response) {
-		ArrayList<Board> list = bService.selectTop();
-		response.setContentType("application/json; charset=UTF-8");
-//		Gson gson = new Gson();
-//		GsonBuilder gb = new GsonBuilder();
-//		GsonBuilder dfgb = gb.setDateFormat("yyyy-MM-dd");
-//		Gson gson = dfgb.create();
-		GsonBuilder gb = new GsonBuilder().setDateFormat("yyyy-MM-dd");
-		Gson gson = gb.create();
-		try {
-			gson.toJson(list, response.getWriter());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	@GetMapping("top")
+//	public void selectTop(HttpServletResponse response) {
+//		ArrayList<Board> list = bService.selectTop();
+//		response.setContentType("application/json; charset=UTF-8");
+////		Gson gson = new Gson();
+////		GsonBuilder gb = new GsonBuilder();
+////		GsonBuilder dfgb = gb.setDateFormat("yyyy-MM-dd");
+////		Gson gson = dfgb.create();
+//		GsonBuilder gb = new GsonBuilder().setDateFormat("yyyy-MM-dd");
+//		Gson gson = gb.create();
+//		try {
+//			gson.toJson(list, response.getWriter());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	//JSON 버전
 //	@GetMapping("rinsert")

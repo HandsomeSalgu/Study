@@ -64,4 +64,12 @@ public class MemberService {
 		return mapper.ldelete(todo);
 	}
 
+	public ArrayList<Member> selectMembers() {
+		return mapper.selectMembers();
+	}
+
+	public int updateMemberItem(HashMap<String, String> map) {
+		return mapper.updateMemberItem(map);
+	}
+
 }

@@ -12,9 +12,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kh.springboot.board.model.service.BoardService;
+import kh.springboot.board.model.vo.Attachment;
 import kh.springboot.board.model.vo.Board;
+import kh.springboot.board.model.vo.PageInfo;
+import kh.springboot.common.Pagination;
+import kh.springboot.member.model.service.MemberService;
+import kh.springboot.member.model.vo.Member;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -23,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 	
 	private final BoardService bService;
+	private final MemberService mService;
 	
 	@GetMapping("home")
 	public String moveToMainAdmin(Model model) {
@@ -70,4 +78,41 @@ public class AdminController {
 		
 		return "admin";
 	}
+	
+	@GetMapping("members")
+	public String selectMembers(Model model) {
+		
+		ArrayList<Member> list = mService.selectMembers();
+		
+		model.addAttribute("list", list);
+		return "members";
+	}
+	
+	@GetMapping("boards")
+	public String selectBoards(@RequestParam(value="page", defaultValue="1") int currentPage, Model model, HttpServletRequest request) {
+		// 쿼리 : 게시글 개수 (getListCount)
+		int listCount = bService.getListCount(-1);
+		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 10);
+		ArrayList<Board> list = bService.selectBoardList(pi, -1);
+		
+		model.addAttribute("list", list);
+		model.addAttribute("pi", pi);
+		model.addAttribute("loc", request.getRequestURI());
+		
+		return "boards";
+	}
+	
+   @GetMapping("attms")
+   public String selectAttms(@RequestParam(value="page", defaultValue="1") int currentPage, Model model, HttpServletRequest request) {
+      int listCount = bService.getListCount(-2);
+      PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 10);
+      ArrayList<Board> list = bService.selectBoardList(pi, -2);
+      ArrayList<Attachment> aList = bService.selectAllAttm();
+      
+      model.addAttribute("list", list);
+      model.addAttribute("aList", aList).addAttribute("pi", pi).addAttribute("loc", request.getRequestURI());
+    
+      return "attms";
+   }
 }
+

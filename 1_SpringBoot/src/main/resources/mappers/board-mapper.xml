@@ -4,14 +4,21 @@
 	<select id="getListCount" resultType="_int">
 		select count(*)
 		from board
-		where board_status = 'Y' and board_type = #{i}
+		where board_type = abs(#{i})
+		<if test="i > 0">
+		  and board_status = 'Y' 
+		</if>
 	</select>
 	
 	<select id="selectBoardList" resultMap="boardResultSet">
 		select *
 		from board
 			 join member on(board_writer = id)
-		where board_status = 'Y' and board_type = #{i}
+		where 
+		<if test="i > 0">
+			board_status = 'Y' and
+		</if>
+		 board_type = abs(#{i})
 		order by board_id desc
 	</select>
 	
@@ -32,6 +39,15 @@
 		insert into board
 		values(#{boardId}, #{boardTitle}, #{boardWriter}, #{boardContent},
 			   default, sysdate, sysdate, default, #{boardType})
+	</insert>
+	
+	<insert id="insertAttm">
+		insert all
+		<foreach collection="list" item="item" separator=" ">
+		into attachment
+		values(new_aid, #{item.refBoardId}, #{item.originalName}, #{item.renameName}, #{item.attmPath}, #{item.attmLevel}, default)
+		</foreach>
+		select * from dual
 	</insert>
 	
 	<select id="selectBoard" resultMap="boardResultSet">
@@ -71,15 +87,6 @@
 		</if>
 		order by attm_id
 	</select>
-	
-	<insert id="insertAttm">
-		insert all
-		<foreach collection="list" item="item" separator=" ">
-		into attachment
-		values(new_aid, #{item.refBoardId}, #{item.originalName}, #{item.renameName}, #{item.attmPath}, #{item.attmLevel}, default)
-		</foreach>
-		select * from dual
-	</insert>
 	
 	<delete id="deleteAttm">
 		delete from ATTACHMENT
@@ -163,6 +170,17 @@
 		where rownum <= 5
 		order by board_id desc
 		]]>
+	</select>
+	
+	<update id="updateBoardStatus">
+		update board
+		set board_status = #{status}
+		where board_id = #{id}
+	</update>
+	
+	<select id="selectAllAttm">
+		select * from attachment
+		order by ref_board_id, attm_level, attm_id
 	</select>
 	
 </mapper>
